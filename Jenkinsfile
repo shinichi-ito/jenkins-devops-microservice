@@ -1,4 +1,4 @@
-//SCRIPTED
+//SCRIPTED2
 node {
 	echo "Build"
 	echo "Test"
