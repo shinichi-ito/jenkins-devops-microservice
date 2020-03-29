@@ -1,4 +1,5 @@
-//S
+//SCRIPTED5
+
 node {
 	stage('Build') {
 		echo "Build"
