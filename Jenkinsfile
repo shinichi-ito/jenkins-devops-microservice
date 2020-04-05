@@ -25,23 +25,48 @@ pipeline {
 				echo "BUILD_URL - $env.BUILD_URL"
 			}		
 		}
-		
-		stage('Compile') {
+
+		stage('Compile') {//人間言語から　機械言語に変更する
 			steps {
 				sh "mvn clean compile"
 			}
 		}
 
-		stage('Test') {
+		stage('Test') {//Testする
 			steps {
 				sh "mvn test"
 			}		
 		}
 
-		stage('Integration Test') {
+		stage('Integration Test') {//結合テストを行う
 			steps {
 				sh "mvn failsafe:integration-test failsafe:verify"
 			}		
+		}
+
+		stage('Package') {//パッケージング testはのぞく
+			steps {
+				sh "mvn package -DskipTests"
+			}		
+		}
+
+		stage('Build Docker Image') {
+			steps {
+				//"docker build -t lotsofjoy/devops:$env.BUILD_TAG"
+				script {
+					dockerImage = docker.build("lotsofjoy/devops:$env.BUILD_TAG")
+				}
+			}
+		}
+
+		stage('Push Docker Image') {
+			steps {
+				docker.withRegistry('', 'dockerhub' {
+					dockerImage.push();
+					dockerImage.push('latest');
+				})
+				
+			}
 		}
 	} 
 
